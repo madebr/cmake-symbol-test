@@ -71,6 +71,59 @@ function(parallel_check_include_file)
     endwhile()
 endfunction()
 
+include(CheckIncludeFile)
+
+function(serial_check_include_file)
+    cmake_parse_arguments(ARG "" "" "CHECKS" ${ARGN})
+
+    set(c_ifdefs "")
+    set(c_main_body "")
+    set(i 0)
+
+    set(header_var_list )
+
+    list(LENGTH ARG_CHECKS arg_checks_length)
+
+    while (i LESS arg_checks_length)
+        list(GET ARG_CHECKS "${i}" header)
+        math(EXPR i "${i} + 1")
+        list(GET ARG_CHECKS "${i}" var)
+        math(EXPR i "${i} + 1")
+
+        check_include_file("${header}" "${var}_REFERENCE")
+    endwhile()
+endfunction()
+
+function(compare_check_include_file CHECKS)
+    cmake_parse_arguments(ARG "" "" "CHECKS" ${ARGN})
+
+    list(LENGTH ARG_CHECKS arg_checks_length)
+
+    set(i 0)
+    set(issues)
+    while (i LESS arg_checks_length)
+        list(GET ARG_CHECKS "${i}" header)
+        math(EXPR i "${i} + 1")
+        list(GET ARG_CHECKS "${i}" var)
+        math(EXPR i "${i} + 1")
+
+        set(ref "${${var}_REFERENCE}")
+        set(got "${${var}}")
+
+        if(NOT ref STREQUAL got)
+            list(APPEND issues ${var})
+        endif()
+
+        message(STATUS "ref=${ref} got=${got}          ${var}")
+    endwhile()
+    if(issues)
+        message(WARNING "These header checks don't match: ${issues}")
+    else()
+        message(STATUS "All header checks match!")
+    endif()
+endfunction()
+
+
 function(parallel_check_cxx_symbol_exists)
     cmake_parse_arguments(ARG "" "" "CHECKS;HEADERS" ${ARGN})
 
@@ -206,7 +259,6 @@ function(serial_check_c_symbol_exists)
     endwhile()
 endfunction()
 
-
 function(compare_check_symbol_checks CHECKS)
     cmake_parse_arguments(ARG "" "" "CHECKS;HEADERS" ${ARGN})
 
@@ -234,8 +286,8 @@ function(compare_check_symbol_checks CHECKS)
         message(STATUS "ref=${ref} got=${got}          ${var}")
     endwhile()
     if(issues)
-        message(WARNING "These checks don't match: ${issues}")
+        message(WARNING "These symbol checks don't match: ${issues}")
     else()
-        message(STATUS "All checks match!")
+        message(STATUS "All symbol checks match!")
     endif()
 endfunction()
