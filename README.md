@@ -13,7 +13,7 @@ This is supported by gcc/clang/apple-clang/msvc.
 | - | - | - | - |
 | gcc 13.2.1 (Ninja) | 1s | < 1s | ~1s |
 | gcc 13.2.1 (Unix Makefiles) | 2s | < 1s | ~2s |
-| MSVC 2019 (Visual Studio 16 2019) | 7s | 1s | 6s |
+| MSVC 2019 (Ninja) | 7s | 1s | 6s |
 | MSVC 2022 (Visual Studio 17 2022) | 13s | 8s | 5s |
 
 
@@ -53,7 +53,7 @@ We hope the speed-up encourages compiler developers to create a supported altern
 | - | - | - | - |
 | gcc 13.2.1 (Ninja) | 13s | <1s | ~13s |
 | gcc 13.2.1 (Unix Makefiles) | 15s | <1s | ~15s |
-| MSVC 2019 (Visual Studio 16 2019) | 43s | 1s | 42s |
+| MSVC 2019 (Ninja) | 43s | 1s | 42s |
 | MSVC 2022 (Visual Studio 17 2022) | 51s | 2s | 49s |
 
 example:
