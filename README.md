@@ -68,10 +68,10 @@ template<typename T> concept Has_acos = requires (T t) { ::acos(t); };
 constexpr const char *has_acos = Has_acos<double> ? "INFO[LIBC_HAS_ACOS=1]" : "INFO[LIBC_HAS_ACOS=0]";
 
 int main(int argc, char *argv[]) {
-int result = 0;
-(void)argv;
-result += has_abs[argc];
-result += has_acos[argc];
-return result;
+  int result = 0;
+  (void)argv;
+  result += has_abs[argc];
+  result += has_acos[argc];
+  return result;
 }
 ```
