@@ -1,14 +1,18 @@
 function(parallel_check_include_file)
+    cmake_parse_arguments(ARG "" "" "CHECKS" ${ARGN})
+
     set(c_ifdefs "")
     set(c_main_body "")
     set(i 0)
 
     set(header_var_list )
 
-    while (i LESS "${ARGC}")
-        set(header "${ARGV${i}}")
+    list(LENGTH ARG_CHECKS arg_checks_length)
+
+    while (i LESS arg_checks_length)
+        list(GET ARG_CHECKS "${i}" header)
         math(EXPR i "${i} + 1")
-        set(var "${ARGV${i}}")
+        list(GET ARG_CHECKS "${i}" var)
         math(EXPR i "${i} + 1")
 
         if(DEFINED CACHE{${var}})
@@ -68,20 +72,28 @@ function(parallel_check_include_file)
 endfunction()
 
 function(parallel_check_cxx_symbol_exists)
+    cmake_parse_arguments(ARG "" "" "CHECKS;HEADERS" ${ARGN})
+
+    set(src_hdr)
+    foreach(hdr IN LISTS ARG_HEADERS)
+        string(APPEND header_include_str "#include <${hdr}>\n")
+    endforeach()
+
+    list(LENGTH ARG_CHECKS arg_checks_length)
+
     set(cpp_checks "")
     set(cpp_main_body "")
-    set(i 0)
-
     set(list )
 
-    while(i LESS "${ARGC}")
-        set(var "${ARGV${i}}")
+    set(i 0)
+    while (i LESS arg_checks_length)
+        list(GET ARG_CHECKS "${i}" var)
         math(EXPR i "${i} + 1")
-        set(symbol "${ARGV${i}}")
+        list(GET ARG_CHECKS "${i}" symbol)
         math(EXPR i "${i} + 1")
-        set(first "${ARGV${i}}")
+        list(GET ARG_CHECKS "${i}" first)
         math(EXPR i "${i} + 1")
-        set(count "${ARGV${i}}")
+        list(GET ARG_CHECKS "${i}" count)
         math(EXPR i "${i} + 1")
 
         if(DEFINED CACHE{${var}})
@@ -111,31 +123,6 @@ function(parallel_check_cxx_symbol_exists)
 
     set(src "${CMAKE_CURRENT_BINARY_DIR}/${md5_list}_parallel_checks.cpp")
     set(bin "${CMAKE_CURRENT_BINARY_DIR}/${md5_list}_parallel_checks_bin")
-
-    set(header_list
-        float.h
-        iconv.h
-        inttypes.h
-        limits.h
-        malloc.h
-        math.h
-        memory.h
-        signal.h
-        stdarg.h
-        stddef.h
-        stdint.h
-        stdio.h
-        stdlib.h
-        string.h
-        strings.h
-        sys/types.h
-        time.h
-        wchar.h
-    )
-    set(header_include_str)
-    foreach(hdr IN LISTS header_list)
-        string(APPEND header_include_str "#include <${hdr}>\n")
-    endforeach()
 
     file(WRITE "${src}" "${header_include_str}\n${cpp_checks}int main(int argc, char *argv[]) {\n  int result = 0;  \n  (void)argv;\n${cpp_main_body}  return result;\n}\n")
     try_compile(COMPILED "${CMAKE_CURRENT_BINARY_DIR}/tt" SOURCES "${src}"
@@ -183,42 +170,25 @@ include(CheckSymbolExists)
 include(CheckCSourceCompiles)
 
 function(serial_check_c_symbol_exists)
+    cmake_parse_arguments(ARG "" "" "CHECKS;HEADERS" ${ARGN})
     set(i 0)
 
-    while(i LESS "${ARGC}")
-        set(var "${ARGV${i}}")
-        math(EXPR i "${i} + 1")
-        set(symbol "${ARGV${i}}")
-        math(EXPR i "${i} + 1")
-        set(first "${ARGV${i}}")
-        math(EXPR i "${i} + 1")
-        set(count "${ARGV${i}}")
-        math(EXPR i "${i} + 1")
+    set(src_hdr)
+    foreach(hdr IN LISTS ARG_HEADERS)
+        string(APPEND src_hdr "#include <${hdr}>\n")
+    endforeach()
 
-        set(header_list
-            float.h
-            iconv.h
-            inttypes.h
-            limits.h
-            malloc.h
-            math.h
-            memory.h
-            signal.h
-            stdarg.h
-            stddef.h
-            stdint.h
-            stdio.h
-            stdlib.h
-            string.h
-            strings.h
-            sys/types.h
-            time.h
-            wchar.h
-        )
-        set(src_hdr)
-        foreach(hdr IN LISTS header_list)
-            string(APPEND src_hdr "#include <${hdr}>\n")
-        endforeach()
+    list(LENGTH ARG_CHECKS arg_checks_length)
+
+    while (i LESS arg_checks_length)
+        list(GET ARG_CHECKS "${i}" var)
+        math(EXPR i "${i} + 1")
+        list(GET ARG_CHECKS "${i}" symbol)
+        math(EXPR i "${i} + 1")
+        list(GET ARG_CHECKS "${i}" first)
+        math(EXPR i "${i} + 1")
+        list(GET ARG_CHECKS "${i}" count)
+        math(EXPR i "${i} + 1")
 
         set(args "0")
         set(a 1)
@@ -237,18 +207,21 @@ function(serial_check_c_symbol_exists)
 endfunction()
 
 
-function(compare_check_symbol_checks)
+function(compare_check_symbol_checks CHECKS)
+    cmake_parse_arguments(ARG "" "" "CHECKS;HEADERS" ${ARGN})
+
+    list(LENGTH ARG_CHECKS arg_checks_length)
+
     set(i 0)
     set(issues)
-
-    while(i LESS "${ARGC}")
-        set(var "${ARGV${i}}")
+    while (i LESS arg_checks_length)
+        list(GET ARG_CHECKS "${i}" var)
         math(EXPR i "${i} + 1")
-        set(symbol "${ARGV${i}}")
+        list(GET ARG_CHECKS "${i}" symbol)
         math(EXPR i "${i} + 1")
-        set(first "${ARGV${i}}")
+        list(GET ARG_CHECKS "${i}" first)
         math(EXPR i "${i} + 1")
-        set(count "${ARGV${i}}")
+        list(GET ARG_CHECKS "${i}" count)
         math(EXPR i "${i} + 1")
 
         set(ref "${${var}_REFERENCE}")
