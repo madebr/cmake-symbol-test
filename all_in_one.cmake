@@ -250,7 +250,6 @@ function(serial_check_c_symbol_exists)
             math(EXPR a "${a}+1")
         endwhile()
 
-
         set(src "${src_hdr}int main() {\n ${symbol}(${args});\n return 0;\n}\n")
 
         #check_symbol_exists("${symbol}" "${header_list}" "${var}_REFERENCE")
