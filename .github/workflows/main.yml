@@ -9,41 +9,29 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - { name: Linux (gcc 10), version: 10 }
-          - { name: Linux (gcc 11), version: 11 }
-          - { name: Linux (gcc 12), version: 12 }
-          - { name: Linux (gcc 13), version: 13 }
+          - { name: Linux (gcc 10),   compiler: gcc,  version: 10 }
+          - { name: Linux (gcc 11),   compiler: gcc,  version: 11 }
+          - { name: Linux (gcc 12),   compiler: gcc,  version: 12 }
+          - { name: Linux (gcc 13),   compiler: gcc,  version: 13 }
+          - { name: Linux (clang 11), compiler: clang, version: 11 }
+          - { name: Linux (clang 12), compiler: clang, version: 12 }
+          - { name: Linux (clang 13), compiler: clang, version: 13 }
+          - { name: Linux (clang 14), compiler: clang, version: 14 }
+          - { name: Linux (clang 15), compiler: clang, version: 15 }
+          - { name: Linux (clang 16), compiler: clang, version: 16 }
+          - { name: Linux (clang 17), compiler: clang, version: 17 }
+          - { name: Linux (clang 18), compiler: clang, version: 18 }
 
     container:
-      image: gcc:${{ matrix.platform.version }}
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: CMake (Configure)
-        run: |
-          cmake -B build
-
-  build-clang:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - { name: Linux (clang 11), version: 11 }
-          - { name: Linux (clang 12), version: 12 }
-          - { name: Linux (clang 13), version: 13 }
-          - { name: Linux (clang 14), version: 14 }
-          - { name: Linux (clang 15), version: 15 }
-          - { name: Linux (clang 16), version: 16 }
-          - { name: Linux (clang 17), version: 17 }
-          - { name: Linux (clang 18), version: 18 }
-
-    container:
-      image: teeks99/clang-ubuntu:${{ matrix.build_config.version }}
+      image: ${{ matrix.platform.compiler == 'gcc' && 'gcc' || matrix.platform.compiler == 'clang' && 'teeks99/clang-ubuntu' }}:${{ matrix.platform.version }}
 
     steps:
       - uses: actions/checkout@v4
       - name: Setup
+        run: |
+          apt-get update && apt-get install -y cmake valgrind zlib1g-dev git
+      - name: Setup
+        if: ${{ matrix.platform.compiler == 'clang' }}
         run: |
           echo "CC=clang-${{ matrix.platform.version }}
           echo "CXX=clang-${{ matrix.platform.version }}
@@ -57,8 +45,8 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - { name: Windows,        os: windows-latest }
-          - { name: macOS,          os: macos-latest }
+          - { os: windows-latest }
+          - { os: macos-latest }
 
     steps:
       - uses: actions/checkout@v4
