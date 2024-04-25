@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.6)
 project(cmake-symbol-test LANGUAGES C CXX)
 
-include(}all_in_one.cmake)
+include(all_in_one.cmake)
 
 option(PARALLEL_HEADER_CHECKS "Do Parallel Header Checks" ON)
 option(PARALLEL_SYMBOL_CHECKS "Do Parallel Symbol Checks" ON)
