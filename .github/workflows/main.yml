@@ -11,9 +11,9 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - { name: Windows (gcc),  os: windows-latest, cmake: '-DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++' }
-          - { name: Windows (llvm), os: windows-latest, cmake: '-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++' }
-          - { name: Linux,          os: ubuntu-latest }
+          - { name: Linux (gcc),    os: ubuntu-latest,  cmake: '-DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++' }
+          - { name: Linux (llvm),   os: ubuntu-latest,  cmake: '-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++' }
+          - { name: Windows,        os: windows-latest }
           - { name: macOS,          os: macos-latest }
 
     steps:
