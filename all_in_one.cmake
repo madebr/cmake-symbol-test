@@ -21,7 +21,7 @@ function(parallel_check_include_file)
 
         list(APPEND header_var_list "${header}" "${var}")
 
-        message(STATUS "Performing Parallel Test ${var}")
+        message(STATUS "Looking in parallel for ${header}")
 
         string(APPEND c_ifdefs "#if __has_include(<${header}>)\n#define M${i} \"1\"\n#else\n#define M${i} \"0\"\n#endif\nconst char *V${i} = \"INFO[${var}=\" M${i} \"]\";\n")
         string(APPEND c_main_body "  result += V${i}[argc];\n")
@@ -60,10 +60,10 @@ function(parallel_check_include_file)
 
         string(REGEX MATCH "${re}" yes_no "${has_include}")
         if(CMAKE_MATCH_1)
-            message(STATUS "Performing Parallel Test ${var} - Success")
+            message(STATUS "Looking in parallel for ${header} - found")
             set(v "1")
         else()
-            message(STATUS "Performing Parallel Test ${var} - Failed")
+            message(STATUS "Looking in parallel for ${header} - not found")
             set(v "")
         endif()
 
