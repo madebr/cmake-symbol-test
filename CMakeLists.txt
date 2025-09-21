@@ -1,11 +1,14 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.6...4.0)
 project(cmake-symbol-test LANGUAGES C CXX)
+
+include(parse_linker_output.cmake)
 
 include(all_in_one.cmake)
 
 option(PARALLEL_HEADER_CHECKS "Do Parallel Header Checks" ON)
 option(SERIAL_HEADER_CHECKS "Do Serial Header Checks" ON)
-option(PARALLEL_SYMBOL_CHECKS "Do Parallel Symbol Checks" ON)
+option(PARALLEL_CXX_SYMBOL_CHECKS "Do CXX Parallel Symbol Checks" ON)
+option(PARALLEL_LINKER_SYMBOL_CHECKS "Do linker Parallel Symbol Checks" ON)
 option(SERIAL_SYMBOL_CHECKS "Do Serial Symbol Checks" ON)
 
 set(HEADERS_TO_CHECK
@@ -147,7 +150,7 @@ set(SYMBOLS_TO_CHECK
     LIBC_HAS_TAN        tan         double              1
     LIBC_HAS_TANF       tanf        float               1
     LIBC_HAS_TRUNC      trunc       double              1
-    LIBC_HAS_TRUNCF      truncf      float              1
+    LIBC_HAS_TRUNCF     truncf      float              1
     LIBC_HAS_UNSETENV   unsetenv    "const char *"      1
     LIBC_HAS_WCSNLEN    wcsnlen     "const wchar_t *"   2
     LIBC_HAS_WCSCMP     wcscmp      "const wchar_t *"   2
@@ -159,14 +162,38 @@ set(SYMBOLS_TO_CHECK
     LIBC_HAS_WCSSTR     wcsstr      "const wchar_t *"   2
     LIBC_HAS_WCSTOL     wcstol      "const wchar_t *"   3
 )
+set(i 0)
+list(LENGTH SYMBOLS_TO_CHECK LEN_SYMBOLS_TO_CHECK)
+set(SYMBOLS )
+while (i LESS LEN_SYMBOLS_TO_CHECK)
+    math(EXPR symbol_index "${i} + 1")
+    list(GET SYMBOLS_TO_CHECK "${symbol_index}" symbol)
+    math(EXPR i "${i} + 4")
+    list(APPEND SYMBOLS "${symbol}")
+endwhile()
 
-if(PARALLEL_SYMBOL_CHECKS)
+if(PARALLEL_CXX_SYMBOL_CHECKS)
     string(TIMESTAMP start "%s")
     parallel_check_cxx_symbol_exists(HEADERS ${known_headers} CHECKS ${SYMBOLS_TO_CHECK})
     string(TIMESTAMP end "%s")
     math(EXPR dt_parsym "${end}-${start}")
 else()
     math(EXPR dt_parsym "UNKNOWN")
+endif()
+
+if(PARALLEL_LINKER_SYMBOL_CHECKS)
+    string(TIMESTAMP start "%s")
+    check_symbols_in_parallel(
+        VAR_PREFIX LIBC_HAS_
+        VAR_SUFFIX _LINKER
+        VAR_UPPER
+        HEADERS ${known_headers}
+        SYMBOLS ${SYMBOLS}
+    )
+    string(TIMESTAMP end "%s")
+    math(EXPR dt_parldsym "${end}-${start}")
+else()
+    math(EXPR dt_parldsym "UNKNOWN")
 endif()
 
 if(SERIAL_SYMBOL_CHECKS)
@@ -182,14 +209,18 @@ else()
 endif()
 
 if(PARALLEL_HEADER_CHECKS AND SERIAL_HEADER_CHECKS)
-    compare_check_include_file(${SYMBOLS_TO_CHECK})
+    compare_check_include_file(${HEADERS_TO_CHECK})
 endif()
 
-if(PARALLEL_SYMBOL_CHECKS AND SERIAL_SYMBOL_CHECKS)
-    compare_check_symbol_checks(${SYMBOLS_TO_CHECK})
+if(PARALLEL_CXX_SYMBOL_CHECKS AND SERIAL_SYMBOL_CHECKS)
+    compare_check_symbol_checks(
+        VAR_PREFIX LIBC_HAS_
+        SYMBOLS ${SYMBOLS}
+    )
 endif()
 
-message(STATUS "parallel header:  ${dt_parhdr}s")
-message(STATUS "serial header:    ${dt_serhdr}s")
-message(STATUS "parallel symbols: ${dt_parsym}s")
-message(STATUS "serial symbols:   ${dt_sersym}s")
+message(STATUS "parallel header:         ${dt_parhdr}s")
+message(STATUS "serial header:           ${dt_serhdr}s")
+message(STATUS "parallel C++ symbols:    ${dt_parsym}s")
+message(STATUS "serial symbols:          ${dt_sersym}s")
+message(STATUS "parallel linker symbols: ${dt_parsym}s")
