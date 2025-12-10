@@ -4,6 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build-gcc:
+    name: ${{ matrix.platform.name }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -31,10 +32,7 @@ jobs:
       image: ${{ matrix.platform.compiler == 'gcc' && 'gcc' || matrix.platform.compiler == 'clang' && 'teeks99/clang-ubuntu' }}:${{ matrix.platform.version }}
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Setup
-        run: |
-          apt-get update && apt-get install -y cmake valgrind zlib1g-dev git
+      - uses: actions/checkout@v6
       - name: Setup
         if: ${{ matrix.platform.compiler == 'clang' }}
         run: |
@@ -50,11 +48,11 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - { os: windows-latest }
-          - { os: macos-latest }
+          - { name: Windows, os: windows-latest }
+          - { name: macOS, os: macos-latest }
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: CMake (Configure)
         run: |
           cmake -B build
