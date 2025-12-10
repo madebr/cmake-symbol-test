@@ -58,10 +58,12 @@ function(internal_check_symbols_in_parallel PARALLEL_SUCCESS)
     message("check_c_flags=${check_c_flags}")
 
     set(CMAKE_TRY_COMPILE_TARGET_TYPE "EXECUTABLE")
-    try_compile(try_compile_result "${CMAKE_CURRENT_BINARY_DIR}/tt" SOURCES "${src_path}" NO_CACHE OUTPUT_VARIABLE try_compile_output CMAKE_FLAGS "-DCOMPILE_DEFINITIONS=${check_c_flags}" LINK_LIBRARIES "m")
+    unset(try_compile_result CACHE)
+    try_compile(try_compile_result "${CMAKE_CURRENT_BINARY_DIR}/tt" SOURCES "${src_path}" OUTPUT_VARIABLE try_compile_output CMAKE_FLAGS "-DCOMPILE_DEFINITIONS=${check_c_flags}" LINK_LIBRARIES "m")
 
     message(DEBUG "try_compile result: ${try_compile_result}")
     message(DEBUG "try_compile output: ${try_compile_output}")
+    unset(try_compile_result CACHE)
 
     string(REGEX MATCHALL "\n[^\n]*[:]([^\n]*${non_existing_sym}[^\n]*)\n" custom_re "${try_compile_output}")
     if(NOT custom_re)
