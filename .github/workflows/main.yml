@@ -34,6 +34,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Setup
+        run: |
+          apt-get update && apt-get install -y cmake
+      - name: Setup
         if: ${{ matrix.platform.compiler == 'clang' }}
         run: |
           echo "CC=clang-${{ matrix.platform.version }}
