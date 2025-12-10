@@ -13,6 +13,8 @@ jobs:
           - { name: Linux (gcc 11),   compiler: gcc,  version: 11 }
           - { name: Linux (gcc 12),   compiler: gcc,  version: 12 }
           - { name: Linux (gcc 13),   compiler: gcc,  version: 13 }
+          - { name: Linux (gcc 14),   compiler: gcc,  version: 14 }
+          - { name: Linux (gcc 15),   compiler: gcc,  version: 15 }
           - { name: Linux (clang 11), compiler: clang, version: 11 }
           - { name: Linux (clang 12), compiler: clang, version: 12 }
           - { name: Linux (clang 13), compiler: clang, version: 13 }
@@ -21,6 +23,9 @@ jobs:
           - { name: Linux (clang 16), compiler: clang, version: 16 }
           - { name: Linux (clang 17), compiler: clang, version: 17 }
           - { name: Linux (clang 18), compiler: clang, version: 18 }
+          - { name: Linux (clang 19), compiler: clang, version: 19 }
+          - { name: Linux (clang 20), compiler: clang, version: 20 }
+          - { name: Linux (clang 21), compiler: clang, version: 21 }
 
     container:
       image: ${{ matrix.platform.compiler == 'gcc' && 'gcc' || matrix.platform.compiler == 'clang' && 'teeks99/clang-ubuntu' }}:${{ matrix.platform.version }}
