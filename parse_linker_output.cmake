@@ -55,8 +55,6 @@ function(internal_check_symbols_in_parallel PARALLEL_SUCCESS)
         string(APPEND check_c_flags " -Wno-incompatible-library-redeclaration")
     endif()
 
-    message("check_c_flags=${check_c_flags}")
-
     set(CMAKE_TRY_COMPILE_TARGET_TYPE "EXECUTABLE")
     unset(try_compile_result CACHE)
     try_compile(try_compile_result "${CMAKE_CURRENT_BINARY_DIR}/tt" SOURCES "${src_path}" OUTPUT_VARIABLE try_compile_output CMAKE_FLAGS "-DCOMPILE_DEFINITIONS=${check_c_flags}" LINK_LIBRARIES "m")

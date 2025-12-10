@@ -65,111 +65,29 @@ endwhile()
 
 message(STATUS "known_headers: ${known_headers}")
 
-set(SYMBOLS_TO_CHECK
-    LIBC_HAS_ABS        abs         double              1
-    LIBC_HAS_ACOS       acos        double              1
-    LIBC_HAS_ACOSF      acosf       float               1
-    LIBC_HAS_ASIN       asin        double              1
-    LIBC_HAS_ASINF      asinf       float               1
-    LIBC_HAS_ATAN2      atan2       double              2
-    LIBC_HAS_ATAN2F     atan2f      float               2
-    LIBC_HAS_ATAN       atan        double              1
-    LIBC_HAS_ATANF      atanf       float               1
-    LIBC_HAS_ATOF       atof        "const char *"      1
-    LIBC_HAS_ATOI       atoi        "const char *"      1
-    LIBC_HAS_BCOPY      bcopy       "void *"            3
-    LIBC_HAS_CALLOC     calloc      "size_t"            2
-    LIBC_HAS_CEIL       ceil        double              1
-    LIBC_HAS_CEILF      ceilf       float               1
-    LIBC_HAS_COPYSIGN   copysign    double              2
-    LIBC_HAS_COPYSIGNF  copysignf   float               2
-    LIBC_HAS_COS        cos         double              1
-    LIBC_HAS_COSF       cosf        float               1
-    LIBC_HAS__EXIT      _Exit       int                 1
-    LIBC_HAS_EXP        exp         double              1
-    LIBC_HAS_EXPF       expf        float               1
-    LIBC_HAS_FABS       fabs        double              1
-    LIBC_HAS_FABSF      fabsf       float               1
-    LIBC_HAS_FLOOR      floor       double              1
-    LIBC_HAS_FLOORF     floorf      float               1
-    LIBC_HAS_FMOD       fmod        double              2
-    LIBC_HAS_FMODF      fmodf       float               2
-    LIBC_HAS_FOPEN64    fopen64     "const char *"      2
-    LIBC_HAS_FREE       free        "void *"            1
-    LIBC_HAS_FSEEKO     fseeko      "FILE *"            3
-    LIBC_HAS_FSEEKO64   fseeko64    "FILE *"            3
-    LIBC_HAS_GETENV     getenv      "const char *"      1
-    LIBC_HAS_INDEX      index       "const char *"      2
-    LIBC_HAS_ITOA       itoa        int                 1
-    LIBC_HAS_LOG        log         double              1
-    LIBC_HAS_LOGF       logf        float               1
-    LIBC_HAS_LOG10      log10       double              1
-    LIBC_HAS_LOG10F     log10f      float               1
-    LIBC_HAS_LROUND     lround      double              1
-    LIBC_HAS_LROUNDF    lroundf     float               1
-    LIBC_HAS__LTOA      _ltoa       long                3
-    LIBC_HAS_MALLOC     malloc      size_t              1
-    LIBC_HAS_MEMCMP     memcmp      "const void *"      3
-    LIBC_HAS_MEMCPY     memcpy      "void *"            3
-    LIBC_HAS_MEMMOVE    memmove     "void *"            3
-    LIBC_HAS_MEMSET     memset      "void *"            3
-    LIBC_HAS_MODF       modf        double              2
-    LIBC_HAS_MODFF      modff       float               2
-    LIBC_HAS_POW        pow         double              2
-    LIBC_HAS_POWF       powf        float               2
-    LIBC_HAS_PUTENV     putenv      "char *"            1
-    LIBC_HAS_REALLOC    realloc     "void *"            2
-    LIBC_HAS_RINDEX     rindex      "const char *"      2
-    LIBC_HAS_ROUND      round       double              1
-    LIBC_HAS_ROUNDF     roundf      float               1
-    LIBC_HAS_SCALBN     scalbn      double              2
-    LIBC_HAS_SCALBNF    scalbnf     float               2
-    LIBC_HAS_SETENV     setenv      "const char *"      3
-    LIBC_HAS_SIN        sin         double              1
-    LIBC_HAS_SINF       sinf        float               1
-    #LIBC_HAS_SQR       sqr         XXX                 XXXX
-    LIBC_HAS_SQRT       sqrt        double              1
-    LIBC_HAS_SQRTF      sqrtf       float               1
-    LIBC_HAS_STRCHR     strchr      "const char *"      2
-    LIBC_HAS_STRCMP     strcmp      "const char *"      2
-    LIBC_HAS_STRLCAT    strlcat     "char *"            3
-    LIBC_HAS_STRLCPY    strlcpy     "char *"            3
-    LIBC_HAS_STRLEN     strlen      "const char *"      1
-    LIBC_HAS_STRNCMP    strncmp     "const char *"      3
-    LIBC_HAS_STRNLEN    strnlen     "const char *"      2
-    LIBC_HAS_STRRCHR    strrchr     "const char *"      2
-    LIBC_HAS_STRSTR     strstr      "const char *"      2
-    LIBC_HAS_STRNSTR    strnstr     "const char *"      3
-    LIBC_HAS_STRTOD     strtod      "const char *"      2
-    LIBC_HAS_STRTOK_R   strtok_r    "char *"            3
-    LIBC_HAS_STRTOL     strtol      "const char *"      3
-    LIBC_HAS_STRTOLL    strtoll     "const char *"      3
-    LIBC_HAS_STRTOUL    strtoul     "const char *"      3
-    LIBC_HAS_STRTOULL   strtoull    "const char *"      3
-    LIBC_HAS_TAN        tan         double              1
-    LIBC_HAS_TANF       tanf        float               1
-    LIBC_HAS_TRUNC      trunc       double              1
-    LIBC_HAS_TRUNCF     truncf      float              1
-    LIBC_HAS_UNSETENV   unsetenv    "const char *"      1
-    LIBC_HAS_WCSNLEN    wcsnlen     "const wchar_t *"   2
-    LIBC_HAS_WCSCMP     wcscmp      "const wchar_t *"   2
-    LIBC_HAS_WCSDUP     wcsdup      "const wchar_t *"   1
-    LIBC_HAS_WCSLCAT    wcslcat     "wchar_t *"         3
-    LIBC_HAS_WCSLCPY    wcslcpy     "wchar_t *"         3
-    LIBC_HAS_WCSLEN     wcslen      "const wchar_t *"   1
-    LIBC_HAS_WCSNCMP    wcsncmp     "const wchar_t *"   3
-    LIBC_HAS_WCSSTR     wcsstr      "const wchar_t *"   2
-    LIBC_HAS_WCSTOL     wcstol      "const wchar_t *"   3
+set(SYMBOLS
+    abs acos acosf asin asinf atan atan2 atan2f atanf atof atoi
+    bcopy
+    ceil ceilf copysign copysignf cos cosf
+    _Exit exp expf
+    fabs fabsf floor floorf fmod fmodf fopen64 fseeko fseeko64
+    getenv
+    _i64toa index itoa
+    log log10 log10f logf lround lroundf _ltoa
+    malloc memcmp memcpy memmove memset modf modff
+    pow powf putenv
+    rindex round roundf
+    scalbn scalbnf setenv sin sinf sqr sqrt sqrtf sscanf strchr
+    strcmp strlcat strlcpy strlen strncmp strnlen strpbrk
+    strrchr strstr strnstr strtod strtok_r strtol strtoll strtoul strtoull
+    tan tanf trunc truncf
+    unsetenv
+    vsnprintf vsscanf
+    wcsnlen wcscmp wcsdup wcslcat wcslcpy wcslen wcsncmp wcsstr wcstol
+
+    _copysign _fseeki64 _strrev _ui64toa _uitoa _ultoa _wcsdup
+    strcasestr
 )
-set(i 0)
-list(LENGTH SYMBOLS_TO_CHECK LEN_SYMBOLS_TO_CHECK)
-set(SYMBOLS )
-while (i LESS LEN_SYMBOLS_TO_CHECK)
-    math(EXPR symbol_index "${i} + 1")
-    list(GET SYMBOLS_TO_CHECK "${symbol_index}" symbol)
-    math(EXPR i "${i} + 4")
-    list(APPEND SYMBOLS "${symbol}")
-endwhile()
 
 if(PARALLEL_LINKER_SYMBOL_CHECKS)
     string(TIMESTAMP start "%s")
@@ -191,20 +109,25 @@ if(SERIAL_SYMBOL_CHECKS)
     if(CMAKE_C_COMPILER_ID MATCHES "(GNU|Clang|AppleClang)")
         list(APPEND CMAKE_REQUIRED_LIBRARIES "m")
     endif()
-    serial_check_c_symbol_exists(HEADERS ${known_headers} CHECKS ${SYMBOLS_TO_CHECK})
+    serial_check_c_symbol_exists(HEADERS ${known_headers} SYMBOLS ${SYMBOLS} PREFIX "LIBC_HAS_" SUFFIX "_REFERENCE")
     string(TIMESTAMP end "%s")
     math(EXPR dt_sersym "${end}-${start}")
 else()
     math(EXPR dt_sersym "UNKNOWN")
 endif()
 
+set(RESULT_HEADERS TRUE)
 if(PARALLEL_HEADER_CHECKS AND SERIAL_HEADER_CHECKS)
-    compare_check_include_file(${HEADERS_TO_CHECK})
+    compare_check_include_file(RESULT_HEADERS ${HEADERS_TO_CHECK})
 endif()
 
+set(RESULT_SYMBOLS TRUE)
 if(PARALLEL_LINKER_SYMBOL_CHECKS AND SERIAL_SYMBOL_CHECKS)
-    compare_check_symbol_checks(
+    compare_check_symbol_checks(RESULT_SYMBOLS
+        VAR_PREFIX_REF LIBC_HAS_
+        VAR_SUFFIX_REF _REFERENCE
         VAR_PREFIX LIBC_HAS_
+        VAR_SUFFIX _LINKER
         SYMBOLS ${SYMBOLS}
     )
 endif()
@@ -214,3 +137,7 @@ message(STATUS "serial header:           ${dt_serhdr}s")
 message(STATUS "parallel C++ symbols:    ${dt_parsym}s")
 message(STATUS "serial symbols:          ${dt_sersym}s")
 message(STATUS "parallel linker symbols: ${dt_parsym}s")
+
+if(NOT RESULT_HEADERS OR NOT RESULT_SYMBOLS)
+    message(FATAL_ERROR "Something did not match :(")
+endif()
