@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.6...4.0)
-project(cmake-symbol-test LANGUAGES C CXX)
+project(cmake-symbol-test LANGUAGES C)
 
 include(parse_linker_output.cmake)
 
@@ -7,7 +7,6 @@ include(all_in_one.cmake)
 
 option(PARALLEL_HEADER_CHECKS "Do Parallel Header Checks" ON)
 option(SERIAL_HEADER_CHECKS "Do Serial Header Checks" ON)
-option(PARALLEL_CXX_SYMBOL_CHECKS "Do CXX Parallel Symbol Checks" ON)
 option(PARALLEL_LINKER_SYMBOL_CHECKS "Do linker Parallel Symbol Checks" ON)
 option(SERIAL_SYMBOL_CHECKS "Do Serial Symbol Checks" ON)
 
@@ -172,15 +171,6 @@ while (i LESS LEN_SYMBOLS_TO_CHECK)
     list(APPEND SYMBOLS "${symbol}")
 endwhile()
 
-if(PARALLEL_CXX_SYMBOL_CHECKS)
-    string(TIMESTAMP start "%s")
-    parallel_check_cxx_symbol_exists(HEADERS ${known_headers} CHECKS ${SYMBOLS_TO_CHECK})
-    string(TIMESTAMP end "%s")
-    math(EXPR dt_parsym "${end}-${start}")
-else()
-    math(EXPR dt_parsym "UNKNOWN")
-endif()
-
 if(PARALLEL_LINKER_SYMBOL_CHECKS)
     string(TIMESTAMP start "%s")
     check_symbols_in_parallel(
@@ -212,7 +202,7 @@ if(PARALLEL_HEADER_CHECKS AND SERIAL_HEADER_CHECKS)
     compare_check_include_file(${HEADERS_TO_CHECK})
 endif()
 
-if(PARALLEL_CXX_SYMBOL_CHECKS AND SERIAL_SYMBOL_CHECKS)
+if(PARALLEL_LINKER_SYMBOL_CHECKS AND SERIAL_SYMBOL_CHECKS)
     compare_check_symbol_checks(
         VAR_PREFIX LIBC_HAS_
         SYMBOLS ${SYMBOLS}
