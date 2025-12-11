@@ -80,7 +80,7 @@ function(serial_check_include_file)
     endforeach()
 endfunction()
 
-function(compare_check_things THINGS)
+function(compare_check_things RESULT)
     set(r TRUE)
     cmake_parse_arguments(ARG "" "VAR_PREFIX;VAR_SUFFIX;VAR_PREFIX_REF;VAR_SUFFIX_REF" "THINGS" ${ARGN})
 
