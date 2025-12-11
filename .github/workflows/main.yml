@@ -40,6 +40,17 @@ jobs:
       - name: Setup
         if: ${{ matrix.platform.compiler == 'clang' }}
         run: |
+          apt-get update
+          apt-get install -y libc++-${{ matrix.platform.version }}-dev libc++abi-${{ matrix.platform.version }}-dev
+          
+          if [[ ${{ matrix.platform.version }} -ge 12 ]]; then
+            apt-get install -y --no-install-recommends libunwind-${{ matrix.platform.version }}-dev
+          fi
+          
+          if [[ "${{ matrix.platform.version }}" -eq 14 ]]; then
+            apt-get install -y --no-install-recommends libclang-rt-${{ matrix.platform.version }}-dev
+          fi
+          
           echo "CC=clang-${{ matrix.platform.version }} >> $GITHUB_ENV
           echo "CXX=clang-${{ matrix.platform.version }} >> $GITHUB_ENV
       - name: CMake (Configure)
