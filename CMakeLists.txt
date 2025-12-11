@@ -97,9 +97,9 @@ if(PARALLEL_LINKER_SYMBOL_CHECKS)
         SYMBOLS ${SYMBOLS}
     )
     string(TIMESTAMP end "%s")
-    math(EXPR dt_parldsym "${end}-${start}")
+    math(EXPR dt_parsym "${end}-${start}")
 else()
-    math(EXPR dt_parldsym "UNKNOWN")
+    math(EXPR dt_parsym "UNKNOWN")
 endif()
 
 if(SERIAL_SYMBOL_CHECKS)
