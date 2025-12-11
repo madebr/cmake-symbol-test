@@ -37,7 +37,7 @@ jobs:
       - name: Setup
         run: |
           apt-get update && apt-get install -y cmake
-      - name: Setup
+      - name: Setup clang
         if: ${{ matrix.platform.compiler == 'clang' }}
         run: |
           apt-get update
@@ -51,8 +51,8 @@ jobs:
             apt-get install -y --no-install-recommends libclang-rt-${{ matrix.platform.version }}-dev
           fi
           
-          echo "CC=clang-${{ matrix.platform.version }} >> $GITHUB_ENV
-          echo "CXX=clang-${{ matrix.platform.version }} >> $GITHUB_ENV
+          echo "CC=clang-${{ matrix.platform.version }}" >> $GITHUB_ENV
+          echo "CXX=clang-${{ matrix.platform.version }}" >> $GITHUB_ENV
       - name: CMake (Configure)
         run: |
           cmake -B build
