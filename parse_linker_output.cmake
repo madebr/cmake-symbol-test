@@ -65,7 +65,7 @@ function(check_symbols_in_parallel PARALLEL_SUCCESS)
     message(DEBUG "try_compile result: ${try_compile_result}")
     message(DEBUG "try_compile output: START[try_compile output]${try_compile_output}END[try_compile output]")
 
-    string(REGEX MATCHALL "\n[^\n]*[:]([^\n]*[_]*${non_existing_sym}[^\n]*)\n" missing_symbol_error "${try_compile_output}")
+    string(REGEX MATCHALL "\n[^\n]*[:]([^\n]*(_|)${non_existing_sym}[^\n]*)\n" missing_symbol_error "${try_compile_output}")
     if(NOT missing_symbol_error)
         message(WARNING "Parallel symbol detection using linker does not work")
         message(WARNING "output is START ${try_compile_output} END")
