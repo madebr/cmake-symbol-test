@@ -40,8 +40,8 @@ jobs:
       - name: Setup
         if: ${{ matrix.platform.compiler == 'clang' }}
         run: |
-          echo "CC=clang-${{ matrix.platform.version }}
-          echo "CXX=clang-${{ matrix.platform.version }}
+          echo "CC=clang-${{ matrix.platform.version }} >> $GITHUB_ENV
+          echo "CXX=clang-${{ matrix.platform.version }} >> $GITHUB_ENV
       - name: CMake (Configure)
         run: |
           cmake -B build

@@ -42,36 +42,12 @@ int main(int argc, char *argv[]) {
 
 ## Combine C symbol checks
 
-Combine tests by using C++20's contracts.
-This is supported by gcc>=12, and MSVC 2022+.
+Combine tests by using the linker.
 
-Some believe this approach relies on Ill-formed, no diagnostic required (IFNDR) behaviour.
-This undefined behavior makes this approach a non-starter for broad usage.
-We hope the speed-up encourages compiler developers to create a supported alternative. 
-
-| Compiler | Normal Checks | Parallel Checks | Speedup |
-| - | - | - | - |
-| gcc 13.2.1 (Ninja) | 13s | <1s | ~13s |
-| gcc 13.2.1 (Unix Makefiles) | 15s | <1s | ~15s |
-| MSVC 2019 (Ninja) | 43s | 1s | 42s |
-| MSVC 2022 (Visual Studio 17 2022) | 51s | 2s | 49s |
-
-example:
-```c++
-
-void abs() = delete;
-template<typename T> concept Has_abs = requires (T t) { ::abs(t); };
-constexpr const char *has_abs = Has_abs<double> ? "INFO[LIBC_HAS_ABS=1]" : "INFO[LIBC_HAS_ABS=0]";
-
-void acos() = delete;
-template<typename T> concept Has_acos = requires (T t) { ::acos(t); };
-constexpr const char *has_acos = Has_acos<double> ? "INFO[LIBC_HAS_ACOS=1]" : "INFO[LIBC_HAS_ACOS=0]";
-
-int main(int argc, char *argv[]) {
-  int result = 0;
-  (void)argv;
-  result += has_abs[argc];
-  result += has_acos[argc];
-  return result;
-}
-```
+| Compiler (Generator)              | Normal Checks | Parallel Checks | Speedup |
+|-----------------------------------|---------------|-----------------|---------|
+| gcc 15.2.0 (Unix Makefiles)       | 11s           | <1s             | ~10s    |
+| gcc 15.2.1 (Ninja)                | 14s           | <1s             | ~13s    |
+| LLVM 21 (Unix Makefiles)          | 19s           | <2s             | ~16s    |
+| Apple-LLVM 21 (Unix Makefiles)    | 22s           | <1s             | ~21s    |
+| MSVC 2022 (Visual Studio 17 2022) | 77s           | <1s             | ~76s    |
