@@ -10,30 +10,31 @@ option(SERIAL_HEADER_CHECKS "Do Serial Header Checks" ON)
 option(PARALLEL_LINKER_SYMBOL_CHECKS "Do linker Parallel Symbol Checks" ON)
 option(SERIAL_SYMBOL_CHECKS "Do Serial Symbol Checks" ON)
 
-set(HEADERS_TO_CHECK
-    float.h         HAVE_FLOAT_H
-    iconv.h         HAVE_ICONV_H
-    inttypes.h      HAVE_INTTYPES_H
-    limits.h        HAVE_LIMITS_H
-    malloc.h        HAVE_MALLOC_H
-    math.h          HAVE_MATH_H
-    memory.h        HAVE_MEMORY_H
-    signal.h        HAVE_SIGNAL_H
-    stdarg.h        HAVE_STDARG_H
-    stddef.h        HAVE_STDDEF_H
-    stdint.h        HAVE_STDINT_H
-    stdio.h         HAVE_STDIO_H
-    stdlib.h        HAVE_STDLIB_H
-    string.h        HAVE_STRING_H
-    strings.h       HAVE_STRINGS_H
-    sys/types.h     HAVE_SYS_TYPES_H
-    time.h          HAVE_TIME_H
-    wchar.h         HAVE_WCHAR_H
+set(HEADERS
+    float.h
+    iconv.h
+    inttypes.h
+    limits.h
+    malloc.h
+    math.h
+    memory.h
+    signal.h
+    stdarg.h
+    stddef.h
+    stdint.h
+    stdio.h
+    stdlib.h
+    string.h
+    strings.h
+    sys/types.h
+    time.h
+    wchar.h
 )
 
 if(PARALLEL_HEADER_CHECKS)
+    message(STATUS "Doing Parallel Header Checks:")
     string(TIMESTAMP start "%s")
-    parallel_check_include_file(CHECKS ${HEADERS_TO_CHECK})
+    parallel_check_include_file(HEADERS ${HEADERS} VAR_PREFIX "HAVE_" VAR_SUFFIX "_INCLUDED")
     string(TIMESTAMP end "%s")
     math(EXPR dt_parhdr "${end}-${start}")
 else()
@@ -41,8 +42,9 @@ else()
 endif()
 
 if(SERIAL_HEADER_CHECKS)
+    message(STATUS "Doing Serial Header Checks:")
     string(TIMESTAMP start "%s")
-    serial_check_include_file(CHECKS ${HEADERS_TO_CHECK})
+    serial_check_include_file(HEADERS ${HEADERS} VAR_PREFIX "HAVE_" VAR_SUFFIX "_REFERENCE")
     string(TIMESTAMP end "%s")
     math(EXPR dt_serhdr "${end}-${start}")
 else()
@@ -50,20 +52,17 @@ else()
 endif()
 
 set(known_headers)
-set(i 0)
-list(LENGTH HEADERS_TO_CHECK len_headers)
-while(i LESS len_headers)
-    list(GET HEADERS_TO_CHECK "${i}" header)
-    math(EXPR i "${i} + 1")
-    list(GET HEADERS_TO_CHECK "${i}" var)
-    math(EXPR i "${i} + 1")
-    set(b ${${var}})
+foreach(header ${HEADERS})
+    string(MAKE_C_IDENTIFIER "${header}" varname_core)
+    string(TOUPPER "${varname_core}" varname_core)
+    set(varname "HAVE_${varname_core}_REFERENCE")
+    set(b ${${varname}})
     if(b)
         list(APPEND known_headers "${header}")
     endif()
-endwhile()
+endforeach()
 
-message(STATUS "known_headers: ${known_headers}")
+message(STATUS "Known headers: ${known_headers}")
 
 set(SYMBOLS
     abs acos acosf asin asinf atan atan2 atan2f atanf atof atoi
@@ -91,10 +90,9 @@ set(SYMBOLS
 
 if(PARALLEL_LINKER_SYMBOL_CHECKS)
     string(TIMESTAMP start "%s")
-    check_symbols_in_parallel(
+    check_symbols_in_parallel(RESULT
         VAR_PREFIX LIBC_HAS_
         VAR_SUFFIX _LINKER
-        VAR_UPPER
         HEADERS ${known_headers}
         SYMBOLS ${SYMBOLS}
     )
@@ -118,17 +116,19 @@ endif()
 
 set(RESULT_HEADERS TRUE)
 if(PARALLEL_HEADER_CHECKS AND SERIAL_HEADER_CHECKS)
-    compare_check_include_file(RESULT_HEADERS ${HEADERS_TO_CHECK})
+    compare_check_things(RESULT_HEADERS
+        VAR_PREFIX_REF HAVE_       VAR_SUFFIX_REF _REFERENCE
+        VAR_PREFIX     HAVE_       VAR_SUFFIX     _INCLUDED
+        THINGS ${HEADERS}
+    )
 endif()
 
 set(RESULT_SYMBOLS TRUE)
 if(PARALLEL_LINKER_SYMBOL_CHECKS AND SERIAL_SYMBOL_CHECKS)
-    compare_check_symbol_checks(RESULT_SYMBOLS
-        VAR_PREFIX_REF LIBC_HAS_
-        VAR_SUFFIX_REF _REFERENCE
-        VAR_PREFIX LIBC_HAS_
-        VAR_SUFFIX _LINKER
-        SYMBOLS ${SYMBOLS}
+    compare_check_things(RESULT_SYMBOLS
+        VAR_PREFIX_REF LIBC_HAS_   VAR_SUFFIX_REF _REFERENCE
+        VAR_PREFIX     LIBC_HAS_   VAR_SUFFIX     _LINKER
+        THINGS ${SYMBOLS}
     )
 endif()
 
